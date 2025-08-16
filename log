@@ -1,39 +1,63 @@
+Processing triggers for ca-certificates (20230311+deb12u1) ...
+Updating certificates in /etc/ssl/certs...
+0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d...
+done.
+PS C:\Users\A3TFHZZ> oc get builds -n php-epo-dev
+NAME      TYPE     FROM             STATUS                       STARTED             DURATION
+test-50   Docker   Git@94d8927      Complete                     8 weeks ago         12m29s
+test-51   Docker   Binary@94d8927   Failed (FetchSourceFailed)   About an hour ago   27s
+test-52   Docker   Binary@94d8927   Failed (DockerBuildFailed)   58 minutes ago      13m58s
+test-53   Docker   Binary@94d8927   Failed (DockerBuildFailed)   37 minutes ago      14m0s
+test-54   Docker   Binary@94d8927   Running                      18 minutes ago
+PS C:\Users\A3TFHZZ> oc describe build test-54 -n php-epo-dev
+Name:           test-54
+Namespace:      php-epo-dev
+Created:        19 minutes ago
+Labels:         app=test
+                app.kubernetes.io/component=test
+                app.kubernetes.io/instance=test
+                buildconfig=test
+                openshift.io/build-config.name=test
+                openshift.io/build.start-policy=Serial
+Annotations:    openshift.io/build-config.name=test
+                openshift.io/build.number=54
+                openshift.io/build.pod-name=test-54-build
 
+Status:         Running
+Started:        Sat, 16 Aug 2025 14:43:30 PKT
+Duration:       running for 19m12s
 
-                           APPLICATION IN PRODUCTION.
+Build Config:   test
+Build Pod:      test-54-build
 
+Strategy:       Docker
+From Image:     DockerImage docker.io/namoshek/php-mssql@sha256:5a16f272a1fa0c201e8b2eb6b5f2c92315b444fc97a657677be7400f12cb6b97
+Volumes:        <none>
+Output to:      ImageStreamTag test:latest
+Binary:         provided on build
+Push Secret:    builder-dockercfg-s4vhj
 
-  Do you really wish to run this command? (yes/no) [no]
-❯
-   WARN  Command canceled.
+Build trigger cause:    <unknown>
 
-
-   INFO  Application cache cleared successfully.
-
-
-   INFO  Configuration cache cleared successfully.
-
---> f3206bd83438
-STEP 11/15: RUN apt-get update -y &&     apt-get install -y --only-upgrade         abseil         aom         freetype2         krb5         libavif         libxml2         sqlite3 &&     rm -rf /var/lib/apt/lists/*
-Hit:1 http://deb.debian.org/debian bookworm InRelease
-Hit:2 http://deb.debian.org/debian bookworm-updates InRelease
-Hit:3 http://deb.debian.org/debian-security bookworm-security InRelease
-Hit:4 https://packages.microsoft.com/debian/11/prod bullseye InRelease
-Reading package lists...
-W: https://packages.microsoft.com/debian/11/prod/dists/bullseye/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
-Reading package lists...
-Building dependency tree...
-Reading state information...
-E: Unable to locate package abseil
-E: Unable to locate package aom
-E: Unable to locate package freetype2
-E: Unable to locate package krb5
-E: Unable to locate package libavif
-error: build error: building at STEP "RUN apt-get update -y &&     apt-get install -y --only-upgrade         abseil         aom         freetype2         krb5         libavif         libxml2         sqlite3 &&     rm -rf /var/lib/apt/lists/*": while running runtime: exit status 100
-PS C:\epo>
-PS C:\epo>
-PS C:\epo>
-PS C:\epo>
-PS C:\epo>
-PS C:\epo>
-PS C:\epo>
+Events:
+  Type          Reason          Age     From                    Message
+  ----          ------          ----    ----                    -------
+  Normal        Scheduled       19m     default-scheduler       Successfully assigned php-epo-dev/test-54-build to ip-10-116-150-215.mmm.com
+  Normal        AddedInterface  19m     multus                  Add eth0 [10.130.61.191/23] from ovn-kubernetes
+  Normal        Pulled          19m     kubelet                 Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:89203be70a5161cfa02bdf742a9a50f3d672eea1356a9f2e5e5814429d9ec607" already present on machine
+  Normal        Created         19m     kubelet                 Created container git-clone
+  Normal        Started         19m     kubelet                 Started container git-clone
+  Normal        BuildStarted    19m     build-controller        Build php-epo-dev/test-54 is now running
+  Normal        Pulled          16m     kubelet                 Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:89203be70a5161cfa02bdf742a9a50f3d672eea1356a9f2e5e5814429d9ec607" already present on machine
+  Normal        Created         16m     kubelet                 Created container manage-dockerfile
+  Normal        Started         16m     kubelet                 Started container manage-dockerfile
+  Normal        Pulled          16m     kubelet                 Container image "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:89203be70a5161cfa02bdf742a9a50f3d672eea1356a9f2e5e5814429d9ec607" already present on machine
+  Normal        Created         16m     kubelet                 Created container docker-build
+  Normal        Started         16m     kubelet                 Started container docker-build
+PS C:\Users\A3TFHZZ> oc get istag test:latest -n php-epo-dev
+NAME          IMAGE REFERENCE                                                                                                                             UPDATED
+test:latest   image-registry.openshift-image-registry.svc:5000/php-epo-dev/test@sha256:f30fd4a55266328e7cea8fec19aa1ed4bdfe1efe174b490d11a672e7a0b73d42   8 weeks ago
+PS C:\Users\A3TFHZZ>
+PS C:\Users\A3TFHZZ>
+PS C:\Users\A3TFHZZ>
