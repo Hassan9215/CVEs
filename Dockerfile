@@ -1,0 +1,22 @@
+FROM docker.io/namoshek/php-mssql:8.1-fpm
+RUN apt-get update -y && \
+    apt-get install openssl zip unzip git unixodbc-dev libpng-dev cron zlib1g-dev procps vim -y 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+
+RUN curl -fsSLO "$SUPERCRONIC_URL" \
+ && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
+ && chmod +x "$SUPERCRONIC" \
+ && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
+ && ln -s "/usr/local/bin/${SUPERCRONIC}" /usr/local/bin/supercronic 
+
+WORKDIR /app
+COPY . /app
+RUN composer install  --ignore-platform-req=ext-gd --ignore-platform-req=ext-zip
+RUN chmod 777 -R /app && rm .env.example && php artisan key:generate && php artisan cache:clear && php artisan config:clear && echo "*/2 * * * * php -d memory_limit=4G /app/artisan schedule:run > cronout.txt" > /app/crontab
+
+CMD supercronic /app/crontab > /app/cronic.log 2>&1 & php artisan serve --host=0.0.0.0 --port=8181
+EXPOSE 8181
