@@ -1,11 +1,1 @@
-PS C:\Users\A3TFHZZ>
-PS C:\Users\A3TFHZZ> oc get istag test:latest -n php-epo-dev -o yaml^C
-PS C:\Users\A3TFHZZ> oc get pods -n php-epo-dev -o wide
-NAME                    READY   STATUS       RESTARTS   AGE     IP               NODE                             NOMINATED NODE   READINESS GATES
-test-50-build           0/1     Completed    0          58d     10.129.11.145    ip-10-116-150-185.ec2.internal   <none>           <none>
-test-51-build           0/1     Init:Error   0          82m     10.128.105.235   ip-10-116-150-80.mmm.com         <none>           <none>
-test-52-build           0/1     Error        0          68m     10.128.105.237   ip-10-116-150-80.mmm.com         <none>           <none>
-test-53-build           0/1     Error        0          46m     10.130.61.190    ip-10-116-150-215.mmm.com        <none>           <none>
-test-54-build           0/1     Completed    0          27m     10.130.61.191    ip-10-116-150-215.mmm.com        <none>           <none>
-test-5f7db459f9-d8dgr   1/1     Running      0          5m32s   10.128.48.150    ip-10-116-150-181.mmm.com        <none>           <none>
-PS C:\Users\A3TFHZZ>
+(oc get istag test:latest -n php-epo-dev -o jsonpath="{.image.dockerImageReference}")
