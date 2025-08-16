@@ -1,0 +1,57 @@
+FROM docker.io/namoshek/php-mssql:8.1-fpm
+
+# Update & install packages with CVE-fixed versions
+RUN apt-get update -y && \
+    apt-get install -y \
+        openssl=3.0.5-1+deb12u1 \
+        zip=3.0-11+deb12u2 \
+        unzip=6.0-27+deb12u3 \
+        git=1:2.39.2-1+deb12u1 \
+        unixodbc-dev=2.3.11-2+deb12u2 \
+        libpng-dev=1.6.39-6+deb12u3 \
+        cron \
+        zlib1g-dev=1:1.2.12-2+deb12u3 \
+        vim \
+        abseil=20220623.1-1+deb12u1 \
+        aom=3.6.0-1+deb12u1 \
+        freetype2=2.12.1+dfsg-5+deb12u4 \
+        krb5=1.20.1-2+deb12u2 \
+        libavif=0.11.1-1+deb12u1 \
+        libxml2=2.9.14+dfsg-1.3~deb12u2 \
+        sqlite3=3.40.1-2+deb12u1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Install Supercronic
+ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+    SUPERCRONIC=supercronic-linux-amd64 \
+    SUPERCRONIC_SHA1SUM=cd48d45c4b10f3f0bfdd3a57d054cd05ac96812b
+RUN curl -fsSL "$SUPERCRONIC_URL" -o "$SUPERCRONIC" \
+    && echo "${SUPERCRONIC_SHA1SUM}  $SUPERCRONIC" | sha1sum -c - \
+    && chmod +x "$SUPERCRONIC" \
+    && mv "$SUPERCRONIC" /usr/local/bin/supercronic
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY . /app
+
+# Install PHP dependencies
+RUN composer install --ignore-platform-req=ext-gd --ignore-platform-req=ext-zip
+
+# Set permissions & prepare app
+RUN chmod -R 777 /app \
+    && rm -f .env.example \
+    && php artisan key:generate \
+    && php artisan cache:clear \
+    && php artisan config:clear \
+    && echo "*/2 * * * * php -d memory_limit=4G /app/artisan schedule:run >> /app/cronout.txt 2>&1" > /app/crontab
+
+# Start cron and Laravel server
+CMD ["sh", "-c", "supercronic /app/crontab & php artisan serve --host=0.0.0.0 --port=8181"]
+
+# Expose port
+EXPOSE 8181
