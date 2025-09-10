@@ -1,0 +1,8 @@
+mkdir C:\ocbuild
+robocopy "C:\Users\A3TFHZZ\OneDrive - 3M\Documents\GitHub\epo" C:\ocbuild\epo /E
+
+
+cd C:\ocbuild\epo
+
+
+oc start-build epo-prod --from-dir=. --follow -n php-epo-prod
